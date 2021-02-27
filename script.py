@@ -52,7 +52,7 @@ def get_buyable_stocks(client: Client):
     sleep(5)
 
 
-my_client = Client("szirbikpeti@gmail.com", "tnkEelxr7rfpsf5v1f09Ky23b86f810"[1::3])
+my_client = MessageBot("stockswatcher21@gmail.com", "stockWatcher21")
 #get_buyable_stocks(my_client) if int(input("Branch: ")) == 0 else my_client.listen()
 my_client.send(Message(text="Successful deploy!"), thread_id=my_thread_id, thread_type=ThreadType.USER)
 my_client.markAsUnread(my_thread_id)
