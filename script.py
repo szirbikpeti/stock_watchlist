@@ -15,8 +15,8 @@ class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
         if (int(thread_id) == my_thread_id) and message_object.text == '?':
             msg_id = self.send(Message(text="Processing..."), thread_id=my_thread_id, thread_type=ThreadType.USER)
-            get_buyable_stocks(my_client)
-            self.deleteMessages(msg_id)
+            #get_buyable_stocks(my_client)
+            #self.deleteMessages(msg_id)
 
 
 def get_buyable_stocks(client: Client):
@@ -52,9 +52,11 @@ def get_buyable_stocks(client: Client):
     sleep(5)
 
 
-my_client = MessageBot("stockswatcher21@gmail.com", "stockWatcher21")
+#my_client = MessageBot("stockswatcher21@gmail.com", "stockWatcher21")
 #get_buyable_stocks(my_client) if int(input("Branch: ")) == 0 else my_client.listen()
 #my_client.send(Message(text="Successful deploy!"), thread_id=my_thread_id, thread_type=ThreadType.USER)
 #my_client.markAsUnread(my_thread_id)
 
-my_client.listen()
+#my_client.listen()
+
+print("Successful deploy!")
