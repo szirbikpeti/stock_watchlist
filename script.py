@@ -7,22 +7,22 @@ from fbchat.models import Message, ThreadType
 
 from tabulate import tabulate
 
-base_path = "C:\\Users\\Vostro 15\\Google Drive\\Egyetem_SZTE\\5_felev\\Szkriptnyelvek\\gyakorlat\\tobbi"
+#base_path = "C:\\Users\\Vostro 15\\Google Drive\\Egyetem_SZTE\\5_felev\\Szkriptnyelvek\\gyakorlat\\tobbi"
 my_thread_id = 100002404483520
 
 
 class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
         if (int(thread_id) == my_thread_id) and message_object.text == '?':
-            msg_id = self.send(Message(text="Successful deploy!"), thread_id=my_thread_id, thread_type=ThreadType.USER)
-            #get_buyable_stocks(my_client)
-            #self.deleteMessages(msg_id)
+            msg_id = self.send(Message(text="Processing..."), thread_id=my_thread_id, thread_type=ThreadType.USER)
+            get_buyable_stocks(my_client)
+            self.deleteMessages(msg_id)
 
 
 def get_buyable_stocks(client: Client = None):
     closest_stock = ("", 99999, 0, 0)
 
-    with open(f"{base_path}\\stock_price_target.csv", "r") as file:
+    with open(".\\stock_price_target.csv", "r") as file:
         next(file)
         line = file.readline().split(";")
 
