@@ -4,6 +4,7 @@ import os
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
+print(dir_path)
 onlyfiles = [f for f in listdir(dir_path) if isfile(join(dir_path, f))]
 
 print(onlyfiles)
