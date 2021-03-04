@@ -8,7 +8,6 @@ from fbchat.models import Message, ThreadType
 
 from tabulate import tabulate
 
-#base_path = "C:\\Users\\Vostro 15\\Google Drive\\Egyetem_SZTE\\5_felev\\Szkriptnyelvek\\gyakorlat\\tobbi"
 my_thread_id = 100002404483520
 
 
@@ -17,7 +16,7 @@ class MessageBot(Client):
         if (int(thread_id) == my_thread_id) and message_object.text == '?':
             msg_id = self.send(Message(text="Processing..."), thread_id=my_thread_id, thread_type=ThreadType.USER)
             get_buyable_stocks(my_client)
-            print("isDeleted:" + self.deleteMessages(msg_id))
+            print(self.deleteMessages(msg_id))
 
 
 def get_buyable_stocks(client: Client = None):
