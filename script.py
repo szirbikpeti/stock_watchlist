@@ -17,7 +17,7 @@ class MessageBot(Client):
         if (int(thread_id) == my_thread_id) and message_object.text == '?':
             msg_id = self.send(Message(text="Processing..."), thread_id=my_thread_id, thread_type=ThreadType.USER)
             get_buyable_stocks(my_client)
-            self.deleteMessages(msg_id)
+            print("isDeleted:" + self.deleteMessages(msg_id))
 
 
 def get_buyable_stocks(client: Client = None):
