@@ -22,7 +22,7 @@ class MessageBot(Client):
 def get_buyable_stocks(client: Client = None):
     closest_stock = ("", 99999, 0, 0)
 
-    with open("app\\stock_price_target.csv", "r") as file:
+    with open("app/stock_price_target.csv", "r") as file:
         next(file)
         line = file.readline().split(";")
 
