@@ -18,6 +18,12 @@ chrome_options.binary_location = GOOGLE_CHROME_PATH
 driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, chrome_options=chrome_options)
 driver.get('https://www.messenger.com/')
 
+try:
+	accept_cookies_button = driver.find_element_by_xpath(
+		'/html/body/div[2]/div[2]/div/div/div/div/div[3]/button[2]')
+	accept_cookies_button.click()
+except:
+	pass
 
 email_input = driver.find_element_by_xpath(
     '/html/body/div/div/div/div[1]/div/div/div/div[1]/div/div[3]/div/div[7]/div[1]/div/div[2]/div[1]/div/form/div/input[6]')
@@ -44,10 +50,10 @@ def check_request(thread_id: int):
                fill=(255, 255, 0))
         img.save('/app/buyable_stocks.png')
 	
-	print('Created')
-	print(path.exists('buyable_stocks.png'))
-	print(path.exists('/app/buyable_stocks.png'))
-	print('Done')
+		print('Created')
+		print(path.exists('buyable_stocks.png'))
+		print(path.exists('/app/buyable_stocks.png'))
+		print('Done')
 		
         image = driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div/div[2]/div/form/div/div[3]/div[1]/input')
         image.send_keys('/app/buyable_stocks.png')
