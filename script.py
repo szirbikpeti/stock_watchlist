@@ -27,27 +27,23 @@ email_input.send_keys('stockswatcher21@gmail.com')
 password_input = driver.find_element_by_xpath(
     '/html/body/div/div/div/div[1]/div/div/div/div[1]/div/div[3]/div/div[7]/div[1]/div/div[2]/div[1]/div/form/div/input[7]')
 password_input.send_keys('stockSender21')
-
-login_button = driver.find_element_by_xpath(
-    '/html/body/div/div/div/div[1]/div/div/div/div[1]/div/div[3]/div/div[7]/div[1]/div/div[2]/div[1]/div/form/div/div[1]/button')
-login_button.click()
+password_input.send_keys(Keys.ENTER)
 
 driver.implicitly_wait(10)
 
-grid = driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div[1]/div[1]/div/div/div/div[3]/div[1]/div[2]/div/div')
-print(grid.text)
+
+def check_request(thread_id: int):
+    driver.get(f'https://www.messenger.com/t/{thread_id}')
+    messages = driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div/div[1]/div[1]/div/div/div[3]/div')
+
+    if messages.text[-1] == '?':
+        new_message = driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div/div[2]/div/form/div/div[3]/div[2]/div[1]/div/div/div/div/div[2]/div/div/div/div')
+        new_message.send_keys('Send info!')
+        new_message.send_keys(Keys.ENTER)
+
 
 while True:
-    new_message_sign = driver.find_element_by_xpath(
-        '/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div[1]/div[1]/div/div/div/div[3]/div[1]/div[2]/div/div/div[1]/div/div[1]/div/a/div/div[2]/div[1]/div/div/div[2]/span/span/div/span[3]')
-
-    if new_message_sign.text == '1 p.':
-        mine = driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div[1]/div[1]/div/div/div/div[3]/div[1]/div[2]/div/div/div[1]/div/div[1]/div/a/div[1]/div[2]/div[1]/div/div')
-        mine.click()
-
-        new_message = driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div/div[2]/div/form/div/div[3]/div[2]/div[1]/div/div/div/div/div[2]/div/div/div/div')
-        new_message.send_keys('Successful automatization!')
-        new_message.send_keys(Keys.ENTER)
-        sleep(80)
+    check_request(100002404483520)
+    check_request(100000656116842)
 
 
