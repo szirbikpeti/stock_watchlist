@@ -52,7 +52,7 @@ def check_request(thread_id: int):
 def get_buyable_stocks():
     closest_stock = ("", 99999, 0, 0)
 
-    with open(f"{base_path}\\stock_price_target.csv", "r") as file:
+    with open("/app/stock_price_target.csv", "r") as file:
         next(file)
         line = file.readline().split(";")
 
