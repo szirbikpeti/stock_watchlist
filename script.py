@@ -54,6 +54,7 @@ def get_buyable_stocks():
         stock_details = []
 
         while line[0] != '':
+            print(line[0].upper(), si.get_live_price(line[0]))
             diff = float(si.get_live_price(line[0])) - float(line[1])
             if closest_stock[1] > diff > 0:
                 closest_stock = (line[0].upper(), diff, round(float(si.get_live_price(line[0])), 2), float(line[1]))
