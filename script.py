@@ -1,11 +1,9 @@
+import pathlib
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 
 
-driver = webdriver.Chrome(ChromeDriverManager().install())
-
-
+driver = webdriver.Chrome(str(pathlib.Path(__file__).parent.absolute()) + "/chromedriver.exe")
 driver.get('https://www.messenger.com/')
 
 
