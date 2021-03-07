@@ -17,11 +17,6 @@ driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, chrome_options=chro
 driver.get('https://www.messenger.com/')
 
 
-accept_cookies_button = driver.find_element_by_xpath(
-    '/html/body/div[2]/div[2]/div/div/div/div/div[3]/button[2]')
-accept_cookies_button.click()
-
-
 email_input = driver.find_element_by_xpath(
     '/html/body/div/div/div/div[1]/div/div/div/div[1]/div/div[3]/div/div[7]/div[1]/div/div[2]/div[1]/div/form/div/input[6]')
 email_input.send_keys('stockswatcher21@gmail.com')
