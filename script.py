@@ -3,10 +3,8 @@ from selenium.webdriver.common.keys import Keys
 from tabulate import tabulate
 from yahoo_fin import stock_info as si
 from PIL import Image, ImageDraw
-import os
-
-
-os.mkdir('/app/test')
+import os.path
+from os import path
 
 
 GOOGLE_CHROME_PATH = '/app/.apt/usr/bin/google-chrome'
@@ -40,7 +38,16 @@ def check_request(thread_id: int):
     if messages.text[-1] == '?':
         input_field = driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div/div[2]/div/form/div/div[3]/div[2]/div[1]/div/div/div/div/div[2]/div/div/div/div')
 
-        get_buyable_stocks()
+        img = Image.new('RGB', (215, 58 + 2 * 14 + 5), color=(73, 109, 137))
+        d = ImageDraw.Draw(img)
+        d.text((10, 10), f"{tabulate([['KO', 50, 49], ['T', 30, 29], ['TTCF', 19.12, 19.9]], headers=['Ticker', 'CPrice', 'TPrice'], tablefmt='presto')}",
+               fill=(255, 255, 0))
+        img.save('/app/buyable_stocks.png')
+	
+	print('Created')
+	print(path.exists('buyable_stocks.png'))
+	print(path.exists('/app/buyable_stocks.png'))
+	print('Done')
 		
         image = driver.find_element_by_xpath('/html/body/div[1]/div/div[1]/div/div[2]/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[1]/div[2]/div/div/div/div[2]/div/form/div/div[3]/div[1]/input')
         image.send_keys('/app/buyable_stocks.png')
