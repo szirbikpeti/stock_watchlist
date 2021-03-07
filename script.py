@@ -3,6 +3,10 @@ from selenium.webdriver.common.keys import Keys
 from tabulate import tabulate
 from yahoo_fin import stock_info as si
 from PIL import Image, ImageDraw
+import os
+
+
+os.mkdir('/app/test')
 
 
 GOOGLE_CHROME_PATH = '/app/.apt/usr/bin/google-chrome'
