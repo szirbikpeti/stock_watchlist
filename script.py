@@ -49,8 +49,10 @@ def check_request(thread_id: int):
         d.text((10, 10), f"{tabulate([['KO', 50, 49], ['T', 30, 29], ['TTCF', 19.12, 19.9]], headers=['Ticker', 'CPrice', 'TPrice'], tablefmt='presto')}",
                fill=(255, 255, 0))
         img.save('/app/buyable_stocks.png')
-	
+		
 		print('Created')
+		print(path.exists('./buyable_stocks.png'))
+		print(path.exists('/buyable_stocks.png'))
 		print(path.exists('buyable_stocks.png'))
 		print(path.exists('/app/buyable_stocks.png'))
 		print('Done')
