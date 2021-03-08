@@ -13,7 +13,7 @@ from forex_python.bitcoin import BtcConverter
 
 class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
-        if int(thread_id) == 100002404483520 or int(thread_id) == 100000656116842 and isinstance(message_object.text, str):
+        if (int(thread_id) == 100002404483520 or int(thread_id) == 100000656116842) and isinstance(message_object.text, str):
             if message_object.text.lower() == 'usd':
                 sender(self, thread_id, round(CurrencyRates().get_rate('USD', 'HUF'), 2))
             elif message_object.text.lower() == 'eur':
