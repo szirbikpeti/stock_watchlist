@@ -1,7 +1,7 @@
 from yahoo_fin import stock_info as si
 from datetime import datetime, timedelta
 from fbchat import Client
-from fbchat.models import Message, ThreadType
+from fbchat.models import Message
 
 from tabulate import tabulate
 
@@ -13,17 +13,19 @@ from forex_python.bitcoin import BtcConverter
 
 class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
-        if (int(thread_id) == 100002404483520 or int(thread_id) == 100000656116842) and isinstance(message_object.text, str):
-            if message_object.text.lower() == 'usd':
+        if (int(author_id) == 100002404483520 or int(author_id) == 100000656116842) and isinstance(message_object.text, str):
+            msg = str(message_object.text).lower()
+
+            if msg == 'hi':
+                sender(self, thread_id, f'Hey, {self.fetchUserInfo(thread_id)[str(thread_id)].first_name}')
+            elif msg == 'usd':
                 sender(self, thread_id, round(CurrencyRates().get_rate('USD', 'HUF'), 2))
-            elif message_object.text.lower() == 'eur':
+            elif msg == 'eur':
                 sender(self, thread_id, round(CurrencyRates().get_rate('EUR', 'HUF'), 2))
-            elif message_object.text.lower() == 'btc':
+            elif msg == 'btc':
                 sender(self, thread_id, round(BtcConverter().get_latest_price('USD'), 2))
-            elif message_object.text == '?' or message_object.text == '?p':
-                msg_id = self.send(Message(text="Processing..."), thread_id=thread_id, thread_type=ThreadType.USER)
+            elif msg == '?' or msg == '?p':
                 sender(self, thread_id, get_buyable_stocks(), message_object.text == '?')
-                self.deleteMessages(msg_id)
 
 
 def get_buyable_stocks():
