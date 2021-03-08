@@ -53,9 +53,8 @@ def get_image(message: str):
     d = ImageDraw.Draw(img)
     d.text((10, 10), message, fill=(255, 255, 0))
     path = '/app/image.png'
-	
     print(os.path.exists(path))
-	img.save(path)
+    img.save(path)
     print(os.path.exists(path))
 
     return path
