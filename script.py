@@ -1,6 +1,3 @@
-import pathlib
-from time import sleep
-
 from yahoo_fin import stock_info as si
 
 from fbchat import Client
@@ -8,23 +5,22 @@ from fbchat.models import Message, ThreadType
 
 from tabulate import tabulate
 
-my_thread_id = 0
+from PIL import Image, ImageDraw
 
 
 class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
-        if (int(thread_id) == 100002404483520 or int(thread_id) == 100000656116842) and message_object.text == '?':
-            global my_thread_id
-            my_thread_id = thread_id
-            msg_id = self.send(Message(text="Processing..."), thread_id=my_thread_id, thread_type=ThreadType.USER)
-            get_buyable_stocks(my_client, my_thread_id)
-            print(self.deleteMessages(msg_id))
+        if (int(thread_id) == 100002404483520 or int(thread_id) == 100000656116842) and (message_object.text == '?' or message_object.text == '?p'):
+            print(f'Request from {my_client.fetchUserInfo(thread_id)[str(thread_id)].name}')
+            msg_id = self.send(Message(text="Processing..."), thread_id=thread_id, thread_type=ThreadType.USER)
+            sender(my_client, thread_id, get_buyable_stocks(), message_object.text == '?')
+            self.deleteMessages(msg_id)
 
 
-def get_buyable_stocks(client: Client, thread_id: int):
+def get_buyable_stocks():
     closest_stock = ("", 99999, 0, 0)
 
-    with open(str(pathlib.Path(__file__).parent.absolute()) + "/stock_price_target.csv", "r") as file:
+    with open("/app/stock_price_target.csv", "r") as file:
         next(file)
         line = file.readline().split(";")
 
@@ -42,9 +38,19 @@ def get_buyable_stocks(client: Client, thread_id: int):
 
     stock_details.append([f"({closest_stock[0]})", closest_stock[2], closest_stock[3]])
 
-    client.send(
-        Message(text=f"{tabulate(stock_details, headers=['Ticker', 'CPrice', 'TPrice'], tablefmt='presto')}"),
-        thread_id=thread_id, thread_type=ThreadType.USER)
+    return f"{tabulate(stock_details, headers=['Ticker', 'CPrice', 'TPrice'], tablefmt='presto')}"
+
+
+def sender(client: Client, thread_id: int, message: str, isTextFormat: bool):
+    client.send(Message(text=message), thread_id=thread_id) if isTextFormat else client.sendImage(get_image(message), thread_id=thread_id)
+
+
+def get_image(message: str):
+    img = Image.new('RGB', (215, 58 + (len(message.split('\n')) - 3) * 14 + 5), color=(73, 109, 137))
+    d = ImageDraw.Draw(img)
+    d.text((10, 10), message, fill=(255, 255, 0))
+
+    return img
 
 
 my_client = MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1, user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]')
