@@ -1,3 +1,4 @@
 tabulate==0.8.9
 yahoo-fin==0.8.7
 -e git://github.com/szirbikpeti/forked-edited-fbchat-package.git#egg=fbchat
+Pillow==8.1.2
