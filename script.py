@@ -26,6 +26,13 @@ class MessageBot(Client):
                 sender(self, thread_id, round(BtcConverter().get_latest_price('USD'), 2))
             elif msg == '?' or msg == '?p':
                 sender(self, thread_id, get_buyable_stocks(), message_object.text == '?')
+            elif msg[-1] == '?':
+                try:
+                    sender(self, thread_id, si.get_live_price(msg))
+                except AssertionError or KeyError:
+                    sender(self, thread_id, 'Ticker was not found')
+            elif msg == '--help':
+                sender(self, thread_id, "Commands:\n \u2022 hi\n \u2022 ?\n \u2022 ?p\n \u2022 usd\n \u2022 eur\n \u2022 btc\n \u2022 [ticker]?")
 
 
 def get_buyable_stocks():
