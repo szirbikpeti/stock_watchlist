@@ -1,6 +1,5 @@
-from datetime import datetime
 from yahoo_fin import stock_info as si
-
+from datetime import datetime, timedelta
 from fbchat import Client
 from fbchat.models import Message, ThreadType
 
@@ -16,11 +15,11 @@ class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
         if int(thread_id) == 100002404483520 or int(thread_id) == 100000656116842 and isinstance(message_object.text, str):
             if message_object.text.lower() == 'usd':
-                sender(self, thread_id, CurrencyRates().get_rate('USD', 'HUF'))
+                sender(self, thread_id, round(CurrencyRates().get_rate('USD', 'HUF'), 2))
             elif message_object.text.lower() == 'eur':
-                sender(self, thread_id, CurrencyRates().get_rate('EUR', 'HUF'))
+                sender(self, thread_id, round(CurrencyRates().get_rate('EUR', 'HUF'), 2))
             elif message_object.text.lower() == 'btc':
-                sender(self, thread_id, BtcConverter().get_latest_price('USD'))
+                sender(self, thread_id, round(BtcConverter().get_latest_price('USD'), 2))
             elif message_object.text == '?' or message_object.text == '?p':
                 msg_id = self.send(Message(text="Processing..."), thread_id=thread_id, thread_type=ThreadType.USER)
                 sender(self, thread_id, get_buyable_stocks(), message_object.text == '?')
@@ -59,13 +58,11 @@ def sender(client: Client, thread_id: int, message: str, is_text: bool = True):
 def get_image(message: str):
     img = Image.new('RGB', (215, 70 + (len(message.split('\n')) - 3) * 14 + 5), color=(73, 109, 137))
     d = ImageDraw.Draw(img)
-    d.text((10, 10), f"       {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n{message}", fill=(255, 255, 0))
+    d.text((10, 10), f"       {(datetime.now() + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')}\n{message}", fill=(255, 255, 0))
     path = '/app/image.png'
     img.save(path)
 
     return path
 
 
-my_client = MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1, user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]')
-my_client.listen()
-
+MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1, user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
