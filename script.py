@@ -7,6 +7,8 @@ from tabulate import tabulate
 
 from PIL import Image, ImageDraw
 
+import os
+
 
 class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
@@ -42,15 +44,21 @@ def get_buyable_stocks():
 
 
 def sender(client: Client, thread_id: int, message: str, isTextFormat: bool):
-    client.send(Message(text=message), thread_id=thread_id) if isTextFormat else client.sendImage(get_image(message), thread_id=thread_id)
+    client.send(Message(text=message), thread_id=thread_id) if isTextFormat else client.sendLocalImage(get_image(message), thread_id=thread_id)
+    print('Image sent!')
 
 
 def get_image(message: str):
     img = Image.new('RGB', (215, 58 + (len(message.split('\n')) - 3) * 14 + 5), color=(73, 109, 137))
     d = ImageDraw.Draw(img)
     d.text((10, 10), message, fill=(255, 255, 0))
+    path = '/app/image.png'
+	
+    print(os.path.exists(path))
+	img.save(path)
+    print(os.path.exists(path))
 
-    return img
+    return path
 
 
 my_client = MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1, user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]')
