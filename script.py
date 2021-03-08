@@ -1,3 +1,4 @@
+from datetime import datetime
 from yahoo_fin import stock_info as si
 
 from fbchat import Client
@@ -56,9 +57,9 @@ def sender(client: Client, thread_id: int, message: str, is_text: bool = True):
 
 
 def get_image(message: str):
-    img = Image.new('RGB', (215, 58 + (len(message.split('\n')) - 3) * 14 + 5), color=(73, 109, 137))
+    img = Image.new('RGB', (215, 70 + (len(message.split('\n')) - 3) * 14 + 5), color=(73, 109, 137))
     d = ImageDraw.Draw(img)
-    d.text((10, 10), message, fill=(255, 255, 0))
+    d.text((10, 10), f"       {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n{message}", fill=(255, 255, 0))
     path = '/app/image.png'
     img.save(path)
 
