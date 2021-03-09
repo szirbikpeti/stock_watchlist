@@ -34,7 +34,7 @@ class MessageBot(Client):
                 except Exception:
                     sender('Ticker was not found')
             elif msg == '--help':
-                sender("Commands:\n \u2022 hi\n \u2022 ?\n \u2022 ?p\n \u2022 usd\n \u2022 eur\n \u2022 btc\n \u2022 [ticker]?")
+                sender("Commands:\n \u2022 hi\n \u2022 ?\n \u2022 ?p\n \u2022 usd\n \u2022 eur\n \u2022 btc\n \u2022 [ticker]?\n\n(not case\nsensitive words)")
 
 
 def get_buyable_stocks():
@@ -61,13 +61,13 @@ def get_buyable_stocks():
     return f"{tabulate(stock_details, headers=['Ticker', 'CPrice', 'TPrice'], tablefmt='presto')}"
 
 
-def sender(client: Client, thread_id: int, message: str, is_text: bool = True):
+def message_sender(client: Client, thread_id: int, message: str, is_text: bool = True):
     print(f'Request from {client.fetchUserInfo(thread_id)[str(thread_id)].name}')
     client.send(Message(text=message), thread_id=thread_id) if is_text else client.sendLocalImage(get_image(message), thread_id=thread_id)
 
 
 def get_image(message: str):
-    img = Image.new('RGB', (215, 70 + (len(message.split('\n')) - 3) * 14 + 5), color=(73, 109, 137))
+    img = Image.new('RGB', (215, 70 + (len(message.split('\n')) - 3) * 14 + 6), color=(73, 109, 137))
     d = ImageDraw.Draw(img)
     d.text((10, 10), f"       {(datetime.now() + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')}\n{message}", fill=(255, 255, 0))
     path = '/app/image.png'
