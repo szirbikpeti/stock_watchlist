@@ -1,5 +1,8 @@
-from yahoo_fin import stock_info as si
+import functools
 from datetime import datetime, timedelta
+
+from yahoo_fin import stock_info as si
+
 from fbchat import Client
 from fbchat.models import Message
 
@@ -15,24 +18,23 @@ class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
         if (int(author_id) == 100002404483520 or int(author_id) == 100000656116842) and isinstance(message_object.text, str):
             msg = str(message_object.text).lower()
+            sender = functools.partial(message_sender, self, thread_id)
 
             if msg == 'hi':
-                sender(self, thread_id, f'Hey, {self.fetchUserInfo(thread_id)[str(thread_id)].first_name}')
-            elif msg == 'usd':
-                sender(self, thread_id, round(CurrencyRates().get_rate('USD', 'HUF'), 2))
-            elif msg == 'eur':
-                sender(self, thread_id, round(CurrencyRates().get_rate('EUR', 'HUF'), 2))
+                sender(f'Hey, {self.fetchUserInfo(thread_id)[str(thread_id)].first_name}')
+            elif msg == 'usd' or msg == 'eur':
+                sender(round(CurrencyRates().get_rate(msg.upper(), 'HUF'), 2))
             elif msg == 'btc':
-                sender(self, thread_id, round(BtcConverter().get_latest_price('USD'), 2))
+                sender(round(BtcConverter().get_latest_price('USD'), 2))
             elif msg == '?' or msg == '?p':
-                sender(self, thread_id, get_buyable_stocks(), message_object.text == '?')
-            elif msg[-1] == '?':
+                sender(get_buyable_stocks(), message_object.text == '?')
+            elif msg[-1] == '?' and len(msg.split()) == 1:
                 try:
-                    sender(self, thread_id, si.get_live_price(msg))
-                except AssertionError or KeyError:
-                    sender(self, thread_id, 'Ticker was not found')
+                    sender(si.get_live_price(msg))
+                except Exception:
+                    sender('Ticker was not found')
             elif msg == '--help':
-                sender(self, thread_id, "Commands:\n \u2022 hi\n \u2022 ?\n \u2022 ?p\n \u2022 usd\n \u2022 eur\n \u2022 btc\n \u2022 [ticker]?")
+                sender("Commands:\n \u2022 hi\n \u2022 ?\n \u2022 ?p\n \u2022 usd\n \u2022 eur\n \u2022 btc\n \u2022 [ticker]?")
 
 
 def get_buyable_stocks():
