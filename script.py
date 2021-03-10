@@ -44,7 +44,7 @@ class MessageBot(Client):
                     sender('Ticker was not found')
             elif msg == '--help':
                 sender("Commands:\n \u2022 hi\n \u2022 ?\n \u2022 ?p\n \u2022 usd\n \u2022 eur\n \u2022 btc\n \u2022 [ticker]?\n \u2022 new [ticker] [price]\n \u2022 update [ticker] [price]\n \u2022 delete [ticker]\n \u2022 --all\n \u2022 --allp\n \u2022 --help\n\n(not case\nsensitive words)")
-            elif msg == '--all':
+            elif msg[:5] == '--all':
                 result = []
                 for row in get_watchlist(int(author_id)):
                     result.append([row[1].upper(), row[2]])
