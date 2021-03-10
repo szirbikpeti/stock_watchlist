@@ -79,20 +79,20 @@ def get_image(message: str):
 	
 
 try:
-    repo = git.Repo.clone_from('git@github.com:szirbikpeti/stock_watchlist.git', '/app/stockWatchlist')
+    repo = git.Repo.clone_from('git@github.com:szirbikpeti/stock_watchlist.git', '/app/stock')
 except git.GitCommandError:
-    repo = git.Repo('/app/stockWatchlist')
+    repo = git.Repo('/app/stock')
 
 
-with open('/app/stockWatchlist/random.txt', 'w') as file:
-    file.write('Random text here!')
+with open('/app/stock/random4.txt', 'w') as file:
+    file.write('Random text here 4!')
 
 
-repo.git.add('random.txt')
+repo.git.add('random4.txt')
 repo.index.commit('Add random text file')
 origin = repo.remote(name='origin')
 origin.push()
 
 
-MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1, user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
+#MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1, user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
 
