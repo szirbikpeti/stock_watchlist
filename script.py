@@ -31,7 +31,7 @@ class MessageBot(Client):
                 sender(get_buyable_stocks(), message_object.text == '?')
             elif msg[-1] == '?' and len(msg.split()) == 1:
                 try:
-                    sender(si.get_live_price(msg))
+                    sender(round(si.get_live_price(msg), 2))
                 except Exception:
                     sender('Ticker was not found')
             elif msg == '--help':
