@@ -43,7 +43,7 @@ class MessageBot(Client):
                 except Exception:
                     sender('Ticker was not found')
             elif msg == '--help':
-                sender("Commands:\n \u2022 hi\n \u2022 ?\n \u2022 ?p\n \u2022 usd\n \u2022 eur\n \u2022 btc\n \u2022 [ticker]?\n \u2022 new [ticker] [price]\n \u2022 update [ticker] [price]\n \u2022 delete [ticker]\n\n(not case\nsensitive words)")
+                sender("Commands:\n \u2022 hi\n \u2022 ?\n \u2022 ?p\n \u2022 usd\n \u2022 eur\n \u2022 btc\n \u2022 [ticker]?\n \u2022 new [ticker] [price]\n \u2022 update [ticker] [price]\n \u2022 delete [ticker]\n \u2022 --all\n \u2022 --allp\n \u2022 --help\n\n(not case\nsensitive words)")
             elif msg == '--all':
                 result = []
                 for row in get_watchlist(100002404483520):
@@ -154,7 +154,7 @@ def get_image(message: str, is_all: bool):
     d = ImageDraw.Draw(img)
     d.text((10, 10), f"{' ' if is_all else '       '}{(datetime.now() + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
            fill=(255, 255, 0))
-    path = f"{/app/{'all' if is_all else 'buyable'}_stocks.png"
+    path = f"/app/{'all' if is_all else 'buyable'}_stocks.png"
     img.save(path)
 
     return path
