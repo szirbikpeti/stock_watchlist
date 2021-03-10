@@ -82,6 +82,7 @@ class MessageBot(Client):
                     (symbol, price) = msg[7:].split()
                 except ValueError:
                     sender('Format was not good')
+                    return
 
                 conn = get_connection()
                 cur = conn.cursor()
@@ -102,6 +103,13 @@ class MessageBot(Client):
             elif msg[:6] == 'delete':
                 conn = get_connection()
                 cur = conn.cursor()
+
+                cur.execute(f'SELECT * FROM watchlist_{get_user(author_id)} WHERE ticker = %(tik)s', {"tik": f"{msg[7:]}"})
+
+                if len(cur.fetchall()) != 1:
+                    sender('Ticker is not exists')
+                    return
+
                 cur.execute(f'DELETE FROM watchlist_{get_user(author_id)} WHERE ticker = %(tik)s', {"tik": f"{msg[7:]}"})
 
                 cur.close()
