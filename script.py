@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw
 
 from forex_python.converter import CurrencyRates
 from forex_python.bitcoin import BtcConverter
-import psycopg2
+import psycopg2	
 
 
 def get_connection():
@@ -155,7 +155,8 @@ def message_sender(client: Client, thread_id: int, message: str, is_text: bool =
 
 
 def get_image(message: str, is_all: bool):
-    img = Image.new('RGB', ((150 if is_all else 215), 70 + (len(message.split('\n')) - 3) * 14 + 6), color=(73, 109, 137))
+    length = len(message.split('\n'))
+    img = Image.new('RGB', ((150 if is_all else 215), 70 + (length - 3) * 14 + (6 if length < 7 else 9)), color=(73, 109, 137))
     d = ImageDraw.Draw(img)
     d.text((10, 10), f"{' ' if is_all else '       '}{(datetime.now() + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
            fill=(255, 255, 0))
