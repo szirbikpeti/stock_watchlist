@@ -13,6 +13,8 @@ from PIL import Image, ImageDraw
 from forex_python.converter import CurrencyRates
 from forex_python.bitcoin import BtcConverter
 
+import git
+
 
 class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
@@ -74,6 +76,22 @@ def get_image(message: str):
     img.save(path)
 
     return path
+	
+
+try:
+    repo = git.Repo.clone_from('git@github.com:szirbikpeti/stock_watchlist.git', '/app/stockWatchlist')
+except git.GitCommandError:
+    repo = git.Repo('/app/stockWatchlist')
+
+
+with open('/app/stockWatchlist/random.txt', 'w') as file:
+    file.write('Random text here!')
+
+
+repo.git.add('random.txt')
+repo.index.commit('Add random text file')
+origin = repo.remote(name='origin')
+origin.push()
 
 
 MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1, user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
