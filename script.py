@@ -77,7 +77,7 @@ def get_image(message: str):
 
     return path
 	
-
+"""
 try:
     repo = git.Repo.clone_from('git@github.com:szirbikpeti/stock_watchlist.git', '/app/stock')
 except git.GitCommandError:
@@ -92,7 +92,8 @@ repo.git.add('random4.txt')
 repo.index.commit('Add random text file')
 origin = repo.remote(name='origin')
 origin.push()
+"""
 
 
-#MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1, user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
+MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1, user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
 
