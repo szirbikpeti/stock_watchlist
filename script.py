@@ -41,7 +41,7 @@ class MessageBot(Client):
 def get_buyable_stocks():
     closest_stock = ("", 99999, 0, 0)
 
-    with open("/app/stock_price_target.csv", "r") as file:
+    with open("/app/stockWatchlist/stock_price_target.csv", "r") as file:
         next(file)
         line = file.readline().split(";")
 
@@ -77,14 +77,10 @@ def get_image(message: str):
     return path
 
 
-#MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1, user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
-
-
 try:
     repo = git.Repo.clone_from('https://github.com/szirbikpeti/stock_watchlist.git', '/app/stockWatchlist')
 except git.GitCommandError:
     repo = git.Repo('/app/stockWatchlist')
 
+MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1, user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
 
-for commit in repo.iter_commits():
-    print(commit.message)
