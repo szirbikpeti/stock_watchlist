@@ -84,6 +84,8 @@ class MessageBot(Client):
 
                 if len(result) != 0:
                     sender(f'Ticker already exists with {result[0][2]}$ price')
+                    cur.close()
+                    conn.close()
                     return
 
                 cur.execute(f'INSERT INTO watchlist_{get_user(user_id)} (ticker, targetPrice) VALUES (%s, %s)', (symbol, price))
@@ -108,6 +110,8 @@ class MessageBot(Client):
 
                 if len(cur.fetchall()) != 1:
                     sender('Ticker not found')
+                    cur.close()
+                    conn.close()
                     return
 
                 cur.execute(f'UPDATE watchlist_{get_user(user_id)} SET targetPrice = %(pr)s WHERE ticker = %(tik)s', {"pr": f"{price}", "tik": f"{symbol}"})
@@ -125,6 +129,8 @@ class MessageBot(Client):
 
                 if len(cur.fetchall()) != 1:
                     sender('Ticker not found')
+                    cur.close()
+                    conn.close()
                     return
 
                 cur.execute(f'DELETE FROM watchlist_{get_user(user_id)} WHERE ticker = %(tik)s', {"tik": f"{msg[7:]}"})
@@ -177,7 +183,7 @@ def get_image(message: str, is_all: bool):
     d = ImageDraw.Draw(img)
     d.text((10, 10), f"{' ' if is_all else '       '}{(datetime.now() + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
            fill=(255, 255, 0))
-    path = f"/app/{'all' if is_all else 'buyable'}_stocks.png"
+    path = f"{/app/{'all' if is_all else 'buyable'}_stocks.png"
     img.save(path)
 
     return path
