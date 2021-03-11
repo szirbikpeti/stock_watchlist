@@ -183,7 +183,7 @@ def get_image(message: str, is_all: bool):
     d = ImageDraw.Draw(img)
     d.text((10, 10), f"{' ' if is_all else '       '}{(datetime.now() + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
            fill=(255, 255, 0))
-    path = f"{/app/{'all' if is_all else 'buyable'}_stocks.png"
+    path = f"/app/{'all' if is_all else 'buyable'}_stocks.png"
     img.save(path)
 
     return path
