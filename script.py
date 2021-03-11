@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw
 
 from forex_python.converter import CurrencyRates
 from forex_python.bitcoin import BtcConverter
-import psycopg2	
+import psycopg2
 
 
 def get_connection():
@@ -24,7 +24,8 @@ def get_connection():
 class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
         global symbol, price
-        if (int(author_id) == 100002404483520 or int(author_id) == 100000656116842) and isinstance(message_object.text,
+        user_id = int(author_id)
+        if (user_id == 100002404483520 or user_id == 100000656116842) and isinstance(message_object.text,
                                                                                                    str):
             msg = str(message_object.text).lower()
             sender = functools.partial(message_sender, self, thread_id)
@@ -36,41 +37,56 @@ class MessageBot(Client):
             elif msg == 'btc':
                 sender(round(BtcConverter().get_latest_price('USD'), 2))
             elif msg == '?' or msg == '?p':
-                sender(get_buyable_stocks(get_watchlist(int(author_id))), message_object.text == '?')
+                sender(get_buyable_stocks(get_watchlist(user_id)), message_object.text == '?')
+            elif msg[:4] == 'all?':
+                result = []
+                for row in get_watchlist(user_id):
+                    result.append([row[1].upper(), round(float(si.get_live_price(row[1])), 2), row[2]])
+
+                if msg[-1:] == 'p':
+                    sender(tabulate(result, headers=['Ticker', 'CPrice', 'TPrice'], tablefmt='presto'), is_text=False)
+                else:
+                    sender(tabulate(result, headers=['Ticker', 'CPrice', 'TPrice'], tablefmt='presto'))
             elif msg[-1] == '?' and len(msg.split()) == 1:
                 try:
                     sender(round(si.get_live_price(msg), 2))
                 except Exception:
-                    sender('Ticker was not found')
+                    sender('Ticker not found')
             elif msg == '--help':
-                sender("Commands:\n \u2022 hi\n \u2022 ?\n \u2022 ?p\n \u2022 usd\n \u2022 eur\n \u2022 btc\n \u2022 [ticker]?\n \u2022 new [ticker] [price]\n \u2022 update [ticker] [price]\n \u2022 delete [ticker]\n \u2022 --all\n \u2022 --allp\n \u2022 --help\n\n(not case\nsensitive words)")
+                sender("Commands:\n \u2022 hi\n \u2022 ?\n \u2022 ?p\n \u2022 all?\n \u2022 all?p\n \u2022 usd\n \u2022 eur\n \u2022 btc\n \u2022 [ticker]?\n \u2022 add [ticker] [price]\n \u2022 update [ticker] [price]\n \u2022 delete [ticker]\n \u2022 --all\n \u2022 --allp\n \u2022 --help\n\n(not case\nsensitive words)")
             elif msg[:5] == '--all':
                 result = []
-                for row in get_watchlist(int(author_id)):
+                for row in get_watchlist(user_id):
                     result.append([row[1].upper(), row[2]])
 
                 if msg[-1:] == 'p':
                     sender(tabulate(result, headers=['Ticker', 'TPrice'], tablefmt='presto'), is_text=False, is_all=True)
                 else:
                     sender(tabulate(result, headers=['Ticker', 'TPrice'], tablefmt='presto'))
-            elif msg[:3] == 'new':
+            elif msg[:3] == 'add':
                 try:
                     (symbol, price) = msg[4:].split()
+                    float(price)
                 except ValueError:
-                    sender('Format was not good')
+                    sender('Check the format')
+
+                try:
+                    si.get_live_price(symbol)
+                except AssertionError:
+                    sender('Ticker not found')
+                    return
 
                 conn = get_connection()
                 cur = conn.cursor()
 
-                cur.execute(f'SELECT * FROM watchlist_{get_user(author_id)} WHERE ticker = %(tik)s', {"tik": f"{symbol}"})
+                cur.execute(f'SELECT * FROM watchlist_{get_user(user_id)} WHERE ticker = %(tik)s', {"tik": f"{symbol}"})
                 result = cur.fetchall()
-                print(result)
 
                 if len(result) != 0:
                     sender(f'Ticker already exists with {result[0][2]}$ price')
                     return
 
-                cur.execute(f'INSERT INTO watchlist_{get_user(author_id)} (ticker, targetPrice) VALUES (%s, %s)', (symbol, price))
+                cur.execute(f'INSERT INTO watchlist_{get_user(user_id)} (ticker, targetPrice) VALUES (%s, %s)', (symbol, price))
 
                 cur.close()
                 conn.commit()
@@ -80,20 +96,21 @@ class MessageBot(Client):
             elif msg[:6] == 'update':
                 try:
                     (symbol, price) = msg[7:].split()
+                    float(price)
                 except ValueError:
-                    sender('Format was not good')
+                    sender('Check the format')
                     return
 
                 conn = get_connection()
                 cur = conn.cursor()
 
-                cur.execute(f'SELECT * FROM watchlist_{get_user(author_id)} WHERE ticker = %(tik)s', {"tik": f"{symbol}"})
+                cur.execute(f'SELECT * FROM watchlist_{get_user(user_id)} WHERE ticker = %(tik)s', {"tik": f"{symbol}"})
 
                 if len(cur.fetchall()) != 1:
-                    sender('Ticker is not exists')
+                    sender('Ticker not found')
                     return
 
-                cur.execute(f'UPDATE watchlist_{get_user(author_id)} SET targetPrice = %(pr)s WHERE ticker = %(tik)s', {"pr": f"{price}", "tik": f"{symbol}"})
+                cur.execute(f'UPDATE watchlist_{get_user(user_id)} SET targetPrice = %(pr)s WHERE ticker = %(tik)s', {"pr": f"{price}", "tik": f"{symbol}"})
 
                 cur.close()
                 conn.commit()
@@ -104,13 +121,13 @@ class MessageBot(Client):
                 conn = get_connection()
                 cur = conn.cursor()
 
-                cur.execute(f'SELECT * FROM watchlist_{get_user(author_id)} WHERE ticker = %(tik)s', {"tik": f"{msg[7:]}"})
+                cur.execute(f'SELECT * FROM watchlist_{get_user(user_id)} WHERE ticker = %(tik)s', {"tik": f"{msg[7:]}"})
 
                 if len(cur.fetchall()) != 1:
-                    sender('Ticker is not exists')
+                    sender('Ticker not found')
                     return
 
-                cur.execute(f'DELETE FROM watchlist_{get_user(author_id)} WHERE ticker = %(tik)s', {"tik": f"{msg[7:]}"})
+                cur.execute(f'DELETE FROM watchlist_{get_user(user_id)} WHERE ticker = %(tik)s', {"tik": f"{msg[7:]}"})
 
                 cur.close()
                 conn.commit()
@@ -121,7 +138,7 @@ class MessageBot(Client):
 def get_watchlist(author_id: int):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute(f'SELECT * FROM watchlist_{get_user(author_id)}')
+    cur.execute(f'SELECT * FROM watchlist_{get_user(author_id)} ORDER BY id')
     result = cur.fetchall()
     cur.close()
     conn.close()
@@ -156,7 +173,7 @@ def message_sender(client: Client, thread_id: int, message: str, is_text: bool =
 
 def get_image(message: str, is_all: bool):
     length = len(message.split('\n'))
-    img = Image.new('RGB', ((150 if is_all else 215), 70 + (length - 3) * 14 + (6 if length < 7 else 9)), color=(73, 109, 137))
+    img = Image.new('RGB', ((150 if is_all else 215), 70 + (length - 3) * 14 + (6 if length < 7 else (9 if length < 15 else 13))), color=(73, 109, 137))
     d = ImageDraw.Draw(img)
     d.text((10, 10), f"{' ' if is_all else '       '}{(datetime.now() + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
            fill=(255, 255, 0))
@@ -167,7 +184,7 @@ def get_image(message: str, is_all: bool):
 
 
 def get_user(author_id):
-    return "Peti" if int(author_id) == 100002404483520 else "Bence"
+    return "Peti" if author_id == 100002404483520 else "Bence"
 
 
 
