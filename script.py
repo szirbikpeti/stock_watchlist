@@ -1,17 +1,19 @@
 import functools
+import unidecode
+import os
+
 from yahoo_fin import stock_info as si
 from datetime import datetime, timedelta
 from fbchat import Client
 from fbchat.models import Message
 
 from tabulate import tabulate
-
 from PIL import Image, ImageDraw
 
 from forex_python.converter import CurrencyRates
 from forex_python.bitcoin import BtcConverter
+
 import psycopg2
-import unidecode
 
 
 def get_connection():
@@ -194,7 +196,7 @@ def get_image(message: str, is_all: bool):
                     color=(73, 109, 137))
     d = ImageDraw.Draw(img)
     d.text((10, 10),
-           f"{' ' if is_all else '       '}{(datetime.now() + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
+           f"{' ' if is_all else '       '}{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
            fill=(255, 255, 0))
     path = f"/app/{'all' if is_all else 'buyable'}_stocks.png"
     img.save(path)
@@ -202,5 +204,8 @@ def get_image(message: str, is_all: bool):
     return path
 
 
-MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1,
-           user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
+if __name__ == '__main__':
+    os.system('tzutil /s "Central Europe Standard Time"')
+
+    MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1,
+               user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
