@@ -225,7 +225,7 @@ def auto_message():
 
 
 if __name__ == '__main__':
-    os.system('tzutil /s "Central Europe Standard Time"')
+    os.system("tzutil /s 'Central Europe Standard Time'")
 
     threading.Thread(target=auto_message).start()
 
