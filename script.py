@@ -1,10 +1,8 @@
 import functools
 import schedule
 from time import sleep
-import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading
-import tzutil
 
 import psycopg2
 from PIL import Image, ImageDraw
@@ -202,7 +200,7 @@ def get_image(message: str, is_all: bool):
                     color=(73, 109, 137))
     d = ImageDraw.Draw(img)
     d.text((10, 10),
-           f"{' ' if is_all else '       '}{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
+           f"{' ' if is_all else '       '}{(datetime.now() + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
            fill=(255, 255, 0))
     path = f"/app/stocks.png"
     img.save(path)
@@ -217,8 +215,8 @@ def job():
 
 
 def auto_message():
-    schedule.every().day.at("15:31").do(job)
-    schedule.every().day.at("21:59").do(job)
+    schedule.every().day.at("14:31").do(job)
+    schedule.every().day.at("20:59").do(job)
 
     while True:
         schedule.run_pending()
@@ -226,8 +224,6 @@ def auto_message():
 
 
 if __name__ == '__main__':
-    os.system('tzutil /s "Central Europe Standard Time"')
-
     threading.Thread(target=auto_message).start()
 
     MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1,
