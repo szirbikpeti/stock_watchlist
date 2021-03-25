@@ -4,6 +4,7 @@ from time import sleep
 import os
 from datetime import datetime
 import threading
+import tzutil
 
 import psycopg2
 from PIL import Image, ImageDraw
@@ -225,7 +226,7 @@ def auto_message():
 
 
 if __name__ == '__main__':
-    os.system("tzutil /s 'Central Europe Standard Time'")
+    os.system('tzutil /s "Central Europe Standard Time"')
 
     threading.Thread(target=auto_message).start()
 
