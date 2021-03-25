@@ -1,19 +1,19 @@
 import functools
-import unidecode
+import schedule
+from time import sleep
 import os
-
-from yahoo_fin import stock_info as si
-from datetime import datetime, timedelta
-from fbchat import Client
-from fbchat.models import Message
-
-from tabulate import tabulate
-from PIL import Image, ImageDraw
-
-from forex_python.converter import CurrencyRates
-from forex_python.bitcoin import BtcConverter
+from datetime import datetime
+import threading
 
 import psycopg2
+from PIL import Image, ImageDraw
+from fbchat import Client
+from fbchat.models import Message
+from forex_python.bitcoin import BtcConverter
+from forex_python.converter import CurrencyRates
+from tabulate import tabulate
+from unidecode import unidecode
+from yahoo_fin import stock_info as si
 
 
 def get_connection():
@@ -27,9 +27,9 @@ def get_connection():
 class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
         if (int(author_id) == 100002404483520 or int(author_id) == 100000656116842) and isinstance(message_object.text,
-                                                                                     str):
+                                                                                                   str):
             msg = str(message_object.text).lower()
-            user_name = unidecode.unidecode(self.fetchUserInfo(thread_id)[str(thread_id)].first_name)
+            user_name = unidecode(self.fetchUserInfo(thread_id)[str(thread_id)].first_name)
             sender = functools.partial(message_sender, self, thread_id)
 
             if msg == 'hi':
@@ -40,15 +40,19 @@ class MessageBot(Client):
                 sender(round(BtcConverter().get_latest_price('USD'), 2))
             elif msg == '?' or msg == '?p':
                 sender(get_buyable_stocks(get_watchlist(user_name)), message_object.text == '?')
+            elif msg == '??':
+                result = []
+                for row in get_watchlist(user_name):
+                    result.append([row[1].upper(), round(float(si.get_live_price(row[1])), 2), row[2]])
+
+                sender(tabulate(result, headers=['Ticker', 'CPrice', 'TPrice'], tablefmt='presto'), is_text=False)
             elif msg[:4] == 'all?':
                 result = []
                 for row in get_watchlist(user_name):
                     result.append([row[1].upper(), round(float(si.get_live_price(row[1])), 2), row[2]])
 
-                if msg[-1:] == 'p':
-                    sender(tabulate(result, headers=['Ticker', 'CPrice', 'TPrice'], tablefmt='presto'), is_text=False)
-                else:
-                    sender(tabulate(result, headers=['Ticker', 'CPrice', 'TPrice'], tablefmt='presto'))
+                sender(tabulate(result, headers=['Ticker', 'CPrice', 'TPrice'], tablefmt='presto'),
+                       is_text=msg[-1:] != 'p')
             elif msg[-1] == '?' and len(msg.split()) == 1:
                 try:
                     sender(round(si.get_live_price(msg), 2))
@@ -192,20 +196,38 @@ def message_sender(client: Client, thread_id: int, message: str, is_text: bool =
 def get_image(message: str, is_all: bool):
     length = len(message.split('\n'))
     img = Image.new('RGB', (
-    (150 if is_all else 215), 70 + (length - 3) * 14 + (6 if length < 7 else (9 if length < 15 else 13))),
+        (150 if is_all else 215),
+        70 + (length - 3) * 14 + (6 if length < 7 else (9 if length < 15 else (15 if length < 20 else 20)))),
                     color=(73, 109, 137))
     d = ImageDraw.Draw(img)
     d.text((10, 10),
            f"{' ' if is_all else '       '}{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
            fill=(255, 255, 0))
-    path = f"/app/{'all' if is_all else 'buyable'}_stocks.png"
+    path = f"/app/stocks.png"
     img.save(path)
 
     return path
 
 
+def job():
+    client = Client("szirbikpeti@gmail.com", "gnKfekQrP4fhif7V1Lw94N2P08cH9Gs"[1::3], max_tries=1,
+                    user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]')
+    client.send(Message("??"), 100063802646208)
+
+
+def auto_message():
+    schedule.every().day.at("15:31").do(job)
+    schedule.every().day.at("21:59").do(job)
+
+    while True:
+        schedule.run_pending()
+        sleep(1)
+
+
 if __name__ == '__main__':
     os.system('tzutil /s "Central Europe Standard Time"')
+
+    threading.Thread(target=auto_message).start()
 
     MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1,
                user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
