@@ -1,8 +1,5 @@
 import functools
-import schedule
-from time import sleep
 from datetime import datetime, timedelta
-import threading
 
 import psycopg2
 from PIL import Image, ImageDraw
@@ -25,8 +22,9 @@ def get_connection():
 
 class MessageBot(Client):
     def onMessage(self, author_id, message_object, thread_id, thread_type, **kwargs):
-        if (int(author_id) == 100002404483520 or int(author_id) == 100000656116842) and isinstance(message_object.text,
-                                                                                                   str):
+        msg = str(message_object.text).lower()
+
+        if (int(author_id) == 100002404483520 or int(author_id) == 100000656116842) and isinstance(msg, str):
             msg = str(message_object.text).lower()
             user_name = unidecode(self.fetchUserInfo(thread_id)[str(thread_id)].first_name)
             sender = functools.partial(message_sender, self, thread_id)
@@ -200,7 +198,8 @@ def get_image(message: str, is_all: bool):
                     color=(73, 109, 137))
     d = ImageDraw.Draw(img)
     d.text((10, 10),
-           f"{' ' if is_all else '       '}{(datetime.now() + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
+           f"{' ' if is_all else '       '}"
+           f"{(datetime.now() + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')}\n{message}",
            fill=(255, 255, 0))
     path = f"/app/stocks.png"
     img.save(path)
@@ -208,23 +207,6 @@ def get_image(message: str, is_all: bool):
     return path
 
 
-def job():
-    client = Client("szirbikpeti@gmail.com", "gnKfekQrP4fhif7V1Lw94N2P08cH9Gs"[1::3], max_tries=1,
-                    user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]')
-    client.send(Message("??"), 100063802646208)
-
-
-def auto_message():
-    schedule.every().day.at("14:31").do(job)
-    schedule.every().day.at("20:59").do(job)
-
-    while True:
-        schedule.run_pending()
-        sleep(1)
-
-
 if __name__ == '__main__':
-    threading.Thread(target=auto_message).start()
-
     MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1,
                user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
