@@ -209,4 +209,4 @@ def get_image(message: str, is_all: bool):
 
 if __name__ == '__main__':
     MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1,
-               user_agent='[FB_IAB/MESSENGER;FBAV/310.0.0.0.83;]').listen()
+               user_agent='[FB_IAB/MESSENGER;FBAV/312.0.0.45.117;]').listen()
