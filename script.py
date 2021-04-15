@@ -216,9 +216,12 @@ def get_fb_version():
     table = driver.find_element_by_xpath(
         '/html/body/div[1]/div[2]/div/article/div[1]/p[2]')
 
-    return [row[9:].split(" (")[0]
-            for row in table.text.split("\n")
-            if str(row).startswith("Version")][0]
+    version = [row[9:].split(" (")[0] 
+               for row in table.text.split("\n") 
+               if str(row).startswith("Version")][0]
+
+    driver.close()
+    return version
 
 
 if __name__ == '__main__':
