@@ -11,6 +11,8 @@ from tabulate import tabulate
 from unidecode import unidecode
 from yahoo_fin import stock_info as si
 
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 
 def get_connection():
     return psycopg2.connect(
@@ -207,6 +209,18 @@ def get_image(message: str, is_all: bool):
     return path
 
 
+def get_fb_version():
+    driver = webdriver.Chrome(ChromeDriverManager().install())
+    driver.get('https://www.androidapksbox.com/facebook/')
+
+    table = driver.find_element_by_xpath(
+        '/html/body/div[1]/div[2]/div/article/div[1]/p[2]')
+
+    return [row[9:].split(" (")[0]
+            for row in table.text.split("\n")
+            if str(row).startswith("Version")][0]
+
+
 if __name__ == '__main__':
     MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1,
-               user_agent='[FB_IAB/MESSENGER;FBAV/312.0.0.45.117;]').listen()
+               user_agent=f'[FB_IAB/MESSENGER;FBAV/{get_fb_version()};]').listen()

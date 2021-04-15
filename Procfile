@@ -1,1 +1,1 @@
-worker: python selenium_script.py
+worker: python script.py
