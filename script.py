@@ -225,5 +225,5 @@ def get_fb_version():
 
 
 if __name__ == '__main__':
-    MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1,
+    MessageBot("stockswatcher21@gmail.com", "stockWatcher2021", max_tries=1,
                user_agent=f'[FB_IAB/MESSENGER;FBAV/{get_fb_version()};]').listen()
