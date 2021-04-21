@@ -221,9 +221,10 @@ def get_fb_version():
                if str(row).startswith("Version")][0]
 
     driver.close()
+    print("Version:" + version)
     return version
 
 
 if __name__ == '__main__':
     MessageBot("stockswatcher21@gmail.com", "stockWatcher2021", max_tries=1,
-               user_agent=f'[FB_IAB/MESSENGER;FBAV/{get_fb_version()};]').listen()
+               user_agent='[FB_IAB/MESSENGER;FBAV/314.0.0.43.119;]').listen()
