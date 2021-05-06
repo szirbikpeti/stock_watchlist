@@ -1,5 +1,6 @@
 import functools
 from datetime import datetime, timedelta
+from time import sleep
 
 import psycopg2
 from PIL import Image, ImageDraw
@@ -221,11 +222,12 @@ def get_fb_version():
                if str(row).startswith("Version")][0]
 
     driver.close()
-    print("Version:" + version)
+    print("Version: " + version)
     return version
 
 
 if __name__ == '__main__':
     fb_version = get_fb_version()
-    MessageBot("stockswatcher21@gmail.com", "stockSender21", max_tries=1,
+    sleep(25)
+    MessageBot("stockswatcher21@gmail.com", "stockWatcher2021", max_tries=1,
                user_agent=f'[FB_IAB/MESSENGER;FBAV/{fb_version};]').listen()
